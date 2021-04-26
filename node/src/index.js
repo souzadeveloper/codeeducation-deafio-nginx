@@ -32,7 +32,7 @@ async function Init() {
 Init();
 
 app.get('/', async (req, res) => {
-  let html = '<h1>FullCycle</h1>'
+  let html = '<h1>Full Cycle Rocks!</h1>'
   
   // Seleciona os Registros
   const rows = await query('SELECT * FROM people');
