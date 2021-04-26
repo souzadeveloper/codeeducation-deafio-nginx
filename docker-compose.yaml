@@ -1,0 +1,45 @@
+version: '3'
+
+services: 
+
+  mysql:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: mysql
+    restart: always
+    tty: true
+    volumes: 
+      - ./mysql:/var/lib/mysql
+    environment: 
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    networks: 
+      - node-network
+
+  node:
+    build: 
+      context: node
+    image: souzadeveloper/codeeducation-node
+    container_name: node
+    entrypoint: ./.docker/entrypoint.sh
+    tty: true
+    volumes:
+      - ./node:/usr/src/app
+    networks: 
+      - node-network
+    depends_on: 
+      - mysql
+
+  nginx:
+    build: 
+      context: nginx
+    image: souzadeveloper/codeeducation-nginx
+    container_name: nginx  
+    ports: 
+      - 8080:80
+    networks: 
+      - node-network       
+      
+networks: 
+  node-network:
+    driver: bridge      
