@@ -13,18 +13,21 @@ services:
     environment: 
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
     networks: 
       - node-network
 
   node:
     build: 
       context: node
-    image: souzadeveloper/codeeducation-node
     container_name: node
-    entrypoint: ./.docker/entrypoint.sh
+    entrypoint: dockerize -wait tcp://mysql:3306 -timeout 20s node ./src/index.js
     tty: true
-    volumes:
-      - ./node:/usr/src/app
+    # volumes:
+    #   - ./node:/usr/src/app
+    ports:
+      - 3000:3000
     networks: 
       - node-network
     depends_on: 
@@ -33,12 +36,13 @@ services:
   nginx:
     build: 
       context: nginx
-    image: souzadeveloper/codeeducation-nginx
-    container_name: nginx  
+    container_name: nginx
     ports: 
       - 8080:80
     networks: 
-      - node-network       
+      - node-network  
+    depends_on: 
+      - node     
       
 networks: 
   node-network:
